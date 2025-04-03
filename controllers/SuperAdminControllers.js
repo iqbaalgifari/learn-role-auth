@@ -20,7 +20,7 @@ export const RegisterAdmin = async(req, res) => {
             await SuperAdmin.findOne({where: {email: email}}),
         ])
         if(matchedNameInUserTable || matchedEmailInUserTable || matchedNameInAdminTable || matchedEmailInAdminTable || matchedNameInSuperAdminTable || matchedEmailInSuperAdminTable) {
-            return res.status(400).json({status: 400, message: "The name or email already registered!."})
+            return res.status(400).json({status: 400, message: "The name or email already registered!.", data: {name, email}})
         } 
         
         // Hash the password to make it secure
@@ -58,7 +58,7 @@ export const RegisterSuperAdmin = async(req, res) => {
             await SuperAdmin.findOne({where: {email: email}}),
         ])
         if(matchedNameInUserTable || matchedEmailInUserTable || matchedNameInAdminTable || matchedEmailInAdminTable || matchedNameInSuperAdminTable || matchedEmailInSuperAdminTable) {
-            return res.status(400).json({status: 400, message: "The name or email already registered!."})
+            return res.status(400).json({status: 400, message: "The name or email already registered!.", data: {name, email}})
         } 
         
         // Hash the password to make it secure
@@ -125,7 +125,7 @@ export const LoginSuperAdmin = async(req, res) => {
         })
 
         // Send the status to client
-        return res.status(200).json({status: 200, data: {id, name, email, accessToken}, message:`Successfully Logged in as ${role}!.`})
+        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {id, name, email, accessToken}})
     } catch (error) {
         console.error("Error while logging in.", error)
         return res.status(500).json({message: "Internal server 500 error."})
@@ -167,7 +167,7 @@ export const LogoutSuperAdmin = async(req, res) => {
 }
 
 // Get all users API
-export const GetAllUsers = async(req, res) => {
+export const GetAllUser = async(req, res) => {
     try {
         
         // Check if the table is there
@@ -177,8 +177,177 @@ export const GetAllUsers = async(req, res) => {
         }
 
         // Send the data to the client
-        return res.status(201).json({status: 201, data: {users}, message: "Success to retrieved all users data!."})
+        return res.status(201).json({status: 201, message: "Success to retrieved all users data!.", data: users})
     } catch (error) {
+        console.error("Error while getting all the user data.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Get all admins API
+export const GetAllAdmin = async(req, res) => {
+    try {
         
+        // Check if the table is there
+        const admins = await Admin.findAll()
+        if (!admins.length) {
+            return res.status(400).json({status: 400, message: "No admins data found."})
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: "Success to retrieved all admins data!.",  data: admins})
+    } catch (error) {
+        console.error("Error while getting all the admin data.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Get user by id API
+export const GetUserById = async(req, res) => {
+    try {
+        
+        // Check if client provoded an id
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({status: 400, message: "No user id provided."})
+        }
+
+        // Check if the table is there
+        const userById = await User.findAll({where: {id: id}})
+        if (!userById.length) {
+            return res.status(400).json({status: 400, message: "No user data found."})
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: `Success to retrieved the user by id : ${id}.`, data: userById})
+        
+    } catch (error) {
+        console.error("Error while getting user by id.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+
+// Get admin by id API
+export const GetAdminById = async(req, res) => {
+    try {
+
+        // Check if client provoded an id
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({status: 400, message: "No admin id provided."})
+        }
+
+        // Check if the table is there
+        const adminById = await Admin.findAll({where: {id: id}})
+        if (!adminById.length) {
+            return res.status(400).json({status: 400, message: "No admin data found."})
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: `Success to retrieved the admin by id : ${id}.`, data: adminById})
+
+    } catch (error) {
+        console.error("Error while getting user by id.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Delete all users API
+export const DeleteAllUsers = async(req, res) => {
+    try {
+        
+        // Check if the table is there
+        const users = await User.findAll()
+        const deleteAllUserData = await User.destroy({where: {}})
+        if (!users.length) {
+            return res.status(400).json({status: 400, message: "No users data found."})
+        } else {
+            deleteAllUserData
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: "Success to deleted all the users data!."})
+
+    } catch (error) {
+        console.error("Error while deleting all the user data.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Delete all admins API
+export const DeleteAllAdmins = async(req, res) => {
+    try {
+        
+        // Check if the table is there
+        const admins = await Admin.findAll()
+        const deleteAllAdminData = await Admin.destroy({where: {}})
+        if (!admins.length) {
+            return res.status(400).json({status: 400, message: "No admins data found."})
+        } else {
+            deleteAllAdminData
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: "Success to deleted all the admins data!."})
+    } catch (error) {
+        console.error("Error while deleting all the admin data.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Delete user by id API
+export const DeleteUserById = async(req, res) => {
+    try {
+
+        // Check if client provoded an id
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({status: 400, message: "No user id provided."})
+        }
+
+        // Check if the table is there
+        const userId = await User.findAll({where: {id: id}})
+        const deleteUserById = await User.destroy({where: {id: id}})
+        if (!userId.length) {
+            return res.status(400).json({status: 400, message: "No user data found."})
+        } else {
+            deleteUserById
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: `Success to deleted the user by id : ${id}.`})
+
+    } catch (error) {
+        console.error("Error while deleting user by id.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Delete admin by id API
+export const DeleteAdminById = async(req, res) => {
+    try {
+
+        // Check if client provoded an id
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({status: 400, message: "No admin id provided."})
+        }
+
+        // Check if the table is there
+        const adminId = await Admin.findAll({where: {id: id}})
+        const deleteAdminById = await Admin.destroy({where: {id: id}})
+        if (!adminId.length) {
+            return res.status(400).json({status: 400, message: "No admin data found."})
+        } else {
+            deleteAdminById
+        }
+
+        // Send the data to the client
+        return res.status(201).json({status: 201, message: `Success to deleted the admin by id : ${id}.`})
+
+    } catch (error) {
+        console.error("Error while deleting admin by id.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
     }
 }

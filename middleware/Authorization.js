@@ -1,6 +1,6 @@
 import jsonwebtoken from "jsonwebtoken"
 
-export const verifyAdmin = (req, res, next) => {
+export const verifySuperAdmin = (req, res, next) => {
 
     const jwt = jsonwebtoken
     // Check if there is a token
@@ -16,7 +16,7 @@ export const verifyAdmin = (req, res, next) => {
         }
         const {role} = decoded
         if (role !== "Super Admin") {
-            return res.status(401).json({status: 400, message: "You don't have permission to access this API!."})
+            return res.status(401).json({status: 401, message: "You don't have permission to access this API!."})
         }
         next();
     })
