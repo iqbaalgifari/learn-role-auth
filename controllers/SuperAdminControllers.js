@@ -4,6 +4,8 @@ import Admin from "../models/AdminTable.js"
 import argon2, { argon2id } from "argon2"
 import SuperAdmin from "../models/SuperAdminTable.js"
 
+const jwt = jsonwebtoken
+
 // Register admin
 export const RegisterAdmin = async(req, res) => {
     try {
@@ -84,7 +86,6 @@ export const RegisterSuperAdmin = async(req, res) => {
 export const LoginSuperAdmin = async(req, res) => {
     try {
         const {email, password} = req.body
-        const jwt = jsonwebtoken
 
         // Check if the email is in the database
         const superAdmin = await SuperAdmin.findAll({where: {email: email}})
@@ -164,6 +165,177 @@ export const LogoutSuperAdmin = async(req, res) => {
 
     // Return the status
     return res.status(200).json({message: "Successfully logged out!."})
+}
+
+// Change/update the super admin name API
+export const ChangeNameSuperAdmin = async(req, res) => {
+    try {
+        
+        // Req body
+        const {oldName, newName} = req.body
+        const cookie = req.cookies.authToken
+
+        if (!cookie) {
+            return res.status(404).json({status: 404, message: "No cookie provided!."})
+        }
+
+        // Verify the cookies
+        jwt.verify(cookie, process.env.REFRESH_TOKEN, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({status: 400, message: "Invalid or expired token!."})
+            }
+
+            // Extract the id from the cookie
+            const {id} = decoded
+            console.log("ID : ", id);
+            
+            const superAdmin = await SuperAdmin.findAll({where: {id: id}})
+            if (!superAdmin[0]) {
+                return res.status(404).json({status: 404, message: "No data found!"})
+            }
+
+            // Check if the email is in database are matched
+            const email = superAdmin[0].email
+            const name = superAdmin[0].name
+            
+            if (!name) {
+                return res.status(404).json({status: 404, message: "Name not registered yet!"})
+            }
+            if (oldName !== name) {
+                return res.status(400).json({status: 400, message: "Name not matched!"})
+            }
+
+            // Check if the email is already existed in other table
+            const [matchedNameInUserTable, matchedNameInAdminTable, matchedNameInSuperAdminTable] = await Promise.all([
+                await User.findOne({where: {name: newName}}),
+                await Admin.findOne({where: {name: newName}}),
+                await SuperAdmin.findOne({where: {name: newName}}),
+            ])
+            if(matchedNameInUserTable || matchedNameInAdminTable || matchedNameInSuperAdminTable) {
+                return res.status(400).json({status: 400, message: "The name already registered!, Choose another name.", data: {newName}})
+            }
+
+            // Update the super admin if the password matched
+            await SuperAdmin.update({name: newName}, {where: {id: id}})
+            return res.status(200).json({status: 200, message: "Sucess updating the name!.", data: {id, newName, email}})
+        })
+        
+    } catch (error) {
+        console.error("Error while updating the name.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Change/update the super admin email API
+export const ChangeEmailSuperAdmin = async(req, res) => {
+    try {
+        
+        // Req body
+        const {oldEmail, newEmail} = req.body
+        const cookie = req.cookies.authToken
+
+        if (!cookie) {
+            return res.status(404).json({status: 404, message: "No cookie provided!."})
+        }
+
+        // Verify the cookies
+        jwt.verify(cookie, process.env.REFRESH_TOKEN, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({status: 400, message: "Invalid or expired token!."})
+            }
+
+            // Extract the id from the cookie
+            const {id} = decoded
+            console.log("ID : ", id);
+            
+            const superAdmin = await SuperAdmin.findAll({where: {id: id}})
+            if (!superAdmin[0]) {
+                return res.status(404).json({status: 404, message: "No data found!"})
+            }
+
+            // Check if the email is in database are matched
+            const email = superAdmin[0].email
+            const name = superAdmin[0].name
+            
+            if (!email) {
+                return res.status(404).json({status: 404, message: "Email not registered yet!"})
+            }
+            if (oldEmail !== email) {
+                return res.status(400).json({status: 400, message: "Email not matched!"})
+            }
+
+            // Check if the email is already existed in other table
+            const [matchedEmailInUserTable, matchedEmailInAdminTable, matchedEmailInSuperAdminTable] = await Promise.all([
+                await User.findOne({where: {email: newEmail}}),
+                await Admin.findOne({where: {email: newEmail}}),
+                await SuperAdmin.findOne({where: {email: newEmail}}),
+            ])
+            if(matchedEmailInUserTable || matchedEmailInAdminTable || matchedEmailInSuperAdminTable) {
+                return res.status(400).json({status: 400, message: "The email already registered!, Choose another email.", data: {newEmail}})
+            }
+
+            // Update the super admin if the password matched
+            await SuperAdmin.update({email: newEmail}, {where: {id: id}})
+            return res.status(200).json({status: 200, message: "Sucess updating an email!.", data: {id, name, newEmail}})
+        })
+        
+    } catch (error) {
+        console.error("Error while updating the email.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
+}
+
+// Change/update the super admin password API
+export const ChangePasswordSuperAdmin = async(req, res) => {
+    try {
+        
+        // Req body
+        const {oldPassword, newPassword} = req.body
+        const cookie = req.cookies.authToken
+
+        if (!cookie) {
+            return res.status(400).json({status: 400, message: "No cookie provided!."})
+        }
+
+        // Verify the cookies
+        jwt.verify(cookie, process.env.REFRESH_TOKEN, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({status: 400, message: "Invalid or expired token!."})
+            }
+
+            // Extract the id from the cookie
+            const {id} = decoded
+            const superAdmin = await SuperAdmin.findAll({where: {id: id}})
+            if (!superAdmin) {
+                return res.status(404).json({status: 404, message: "No data found!"})
+            }
+
+            // Check if old password and the password in database are matched
+            const superAdminPassword = superAdmin[0].password
+            const name = superAdmin[0].name
+            const email = superAdmin[0].email
+            if (!superAdminPassword) {
+                return res.status(404).json({status: 404, message: "No data found!"})
+            }
+            const isPasswordMatched = await argon2.verify(superAdminPassword, oldPassword)
+            if (!isPasswordMatched) {
+                return res.status(400).json({status: 400, message: "Password not matched!"})
+            }
+
+            // Hash the new password
+            const hashedPassword = await argon2.hash(newPassword, argon2id)
+
+            // Update the super admin if the password matched
+            await SuperAdmin.update({password: hashedPassword}, {where: {id: id}})
+
+            // Send the status to client
+            return res.status(200).json({status: 200, message: "Sucess updating the password!.", data : {id, name, email}})
+        })
+        
+    } catch (error) {
+        console.error("Error while updating the password.", error)
+        return res.status(500).json({message: "Internal server 500 error."})
+    }
 }
 
 // Get all users API
