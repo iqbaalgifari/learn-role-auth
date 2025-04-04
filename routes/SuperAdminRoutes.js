@@ -21,7 +21,7 @@ const router = express.Router()
 
 // Post method
 router.post("/admin/register", verifySuperAdmin, RegisterAdmin)
-router.post("/super-admin/register", RegisterSuperAdmin)
+router.post("/super-admin/register", verifySuperAdmin, RegisterSuperAdmin)
 router.post("/super-admin/login", LoginSuperAdmin)
 
 // Put Method
