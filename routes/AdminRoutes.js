@@ -8,7 +8,7 @@ import {
     GetUserById, 
     LoginAdmin, 
     LogoutAdmin 
-} from "../controllers/AdminControllers";
+} from "../controllers/AdminControllers.js";
 import { verifyAdmin } from "../middleware/Authorization.js";
 import express from "express";
 
@@ -30,3 +30,5 @@ router.get("/admin/get-user/:id", verifyAdmin, GetUserById)
 router.delete("/admin/delete-all-user", verifyAdmin, DeleteAllUsers)
 router.delete("/admin/delete-user/:id", verifyAdmin, DeleteUserById)
 router.delete("/admin/logout", LogoutAdmin)
+
+export default router

@@ -126,7 +126,7 @@ export const LoginSuperAdmin = async(req, res) => {
         })
 
         // Send the status to client
-        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {id, name, email, role, accessToken}})
+        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {name, email, role, accessToken}})
     } catch (error) {
         console.error("Error while logging in.", error)
         return res.status(500).json({message: "Internal server 500 error."})
@@ -217,7 +217,7 @@ export const ChangeNameSuperAdmin = async(req, res) => {
 
             // Update the super admin if the password matched
             await SuperAdmin.update({name: newName}, {where: {id: id}})
-            return res.status(200).json({status: 200, message: "Sucess updating the name!.", data: {id, newName, email}})
+            return res.status(200).json({status: 200, message: "Sucess updating the name!.", data: {newName, email}})
         })
         
     } catch (error) {
@@ -276,7 +276,7 @@ export const ChangeEmailSuperAdmin = async(req, res) => {
 
             // Update the super admin if the password matched
             await SuperAdmin.update({email: newEmail}, {where: {id: id}})
-            return res.status(200).json({status: 200, message: "Sucess updating an email!.", data: {id, name, newEmail}})
+            return res.status(200).json({status: 200, message: "Sucess updating an email!.", data: {name, newEmail}})
         })
         
     } catch (error) {
@@ -329,7 +329,7 @@ export const ChangePasswordSuperAdmin = async(req, res) => {
             await SuperAdmin.update({password: hashedPassword}, {where: {id: id}})
 
             // Send the status to client
-            return res.status(200).json({status: 200, message: "Sucess updating the password!.", data : {id, name, email}})
+            return res.status(200).json({status: 200, message: "Sucess updating the password!.", data : {name, email}})
         })
         
     } catch (error) {
