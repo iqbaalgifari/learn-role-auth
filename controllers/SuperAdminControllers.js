@@ -126,7 +126,7 @@ export const LoginSuperAdmin = async(req, res) => {
         })
 
         // Send the status to client
-        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {id, name, email, accessToken}})
+        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {id, name, email, role, accessToken}})
     } catch (error) {
         console.error("Error while logging in.", error)
         return res.status(500).json({message: "Internal server 500 error."})
