@@ -12,18 +12,18 @@ export const LoginAdmin = async(req, res) => {
         const {email, password} = req.body
 
         // Check if the email is in the database
-        const superAdmin = await SuperAdmin.findAll({where: {email: email}})
-        if(!superAdmin[0]) {
+        const admin = await Admin.findAll({where: {email: email}})
+        if(!admin[0]) {
             return res.status(404).json({status: 404, message: "The email is not registered yet."})
         } 
 
-        const id = superAdmin[0].id
-        const name = superAdmin[0].name
-        const role = superAdmin[0].role
-        const passwordSuperAdmin = superAdmin[0].password
+        const id = admin[0].id
+        const name = admin[0].name
+        const role = admin[0].role
+        const passwordAdmin = admin[0].password
         
         // Check if the password are the same
-        const verifyPassword = await argon2.verify(passwordSuperAdmin, password)
+        const verifyPassword = await argon2.verify(passwordAdmin, password)
         if (!verifyPassword) {
             return res.status(400).json({status: 400, message: "Invalid Credentials!."})
         }
@@ -37,7 +37,7 @@ export const LoginAdmin = async(req, res) => {
         })
 
         // Update the authToken in the database
-        await SuperAdmin.update({authToken: authToken}, {
+        await Admin.update({authToken: authToken}, {
             where: {id: id}
         })
 
@@ -50,7 +50,7 @@ export const LoginAdmin = async(req, res) => {
         })
 
         // Send the status to client
-        return res.status(200).json({status: 200, message:`Successfully Logged in as ${role}!.`, data: {id, name, email, role, accessToken}})
+        return res.status(200).json({status: 200, data: {id, name, email, role, accessToken}, message:`Successfully Logged in as ${role}!.`})
     } catch (error) {
         console.error("Error while logging in.", error)
         return res.status(500).json({message: "Internal server 500 error."})
@@ -67,16 +67,16 @@ export const LogoutAdmin = async(req, res) => {
     }
     
     // Check if the data is in the database
-    const superAdmin = await SuperAdmin.findAll({
+    const admin = await Admin.findAll({
         where: {authToken: cookie}
     })
-    if (!superAdmin[0]) {
+    if (!admin[0]) {
         return res.status(404).json({status: 404, message: "No data found."})
     }
 
     // Update the data using an ID
-    const id = superAdmin[0].id
-    await SuperAdmin.update({authToken: null}, {
+    const id = admin[0].id
+    await Admin.update({authToken: null}, {
         where: {id: id}
     })
 
