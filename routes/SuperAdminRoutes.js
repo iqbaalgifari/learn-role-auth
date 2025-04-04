@@ -30,16 +30,16 @@ router.put("/super-admin/change-email", verifySuperAdmin, ChangeEmailSuperAdmin)
 router.put("/super-admin/change-password", verifySuperAdmin, ChangePasswordSuperAdmin)
 
 // Get method
-router.get("/get-all-user", verifySuperAdmin, GetAllUser)
-router.get("/get-user/:id", verifySuperAdmin, GetUserById)
-router.get("/get-all-admin", verifySuperAdmin, GetAllAdmin)
-router.get("/get-admin/:id", verifySuperAdmin, GetAdminById)
+router.get("/super-admin/get-all-user", verifySuperAdmin, GetAllUser)
+router.get("/super-admin/get-user/:id", verifySuperAdmin, GetUserById)
+router.get("/super-admin/get-all-admin", verifySuperAdmin, GetAllAdmin)
+router.get("/super-admin/get-admin/:id", verifySuperAdmin, GetAdminById)
 
 // delete method
-router.delete("/delete-all-user", verifySuperAdmin, DeleteAllUsers)
-router.delete("/delete-user/:id", verifySuperAdmin, DeleteUserById)
-router.delete("/delete-all-admin", verifySuperAdmin, DeleteAllAdmins)
-router.delete("/delete-admin/:id", verifySuperAdmin, DeleteAdminById)
+router.delete("/super-admin/delete-all-user", verifySuperAdmin, DeleteAllUsers)
+router.delete("/super-admin/delete-user/:id", verifySuperAdmin, DeleteUserById)
+router.delete("/super-admin/delete-all-admin", verifySuperAdmin, DeleteAllAdmins)
+router.delete("/super-admin/delete-admin/:id", verifySuperAdmin, DeleteAdminById)
 router.delete("/super-admin/logout", LogoutSuperAdmin)
 
 export default router
