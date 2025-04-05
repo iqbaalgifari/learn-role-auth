@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import UserRoutes from "./routes/UserRoutes.js";
 import SuperAdminRoutes from "./routes/SuperAdminRoutes.js";
 import AdminRoutes from "./routes/AdminRoutes.js";
+import AuthRoutes from "./routes/AuthRoutes.js";
 
 const app = express()
 const PORT = 8000
@@ -25,9 +26,10 @@ if (db.authenticate() && Admin.sync() && SuperAdmin.sync() && User.sync() && con
 }
 app.use(express.json())
 app.use(cookieParser())
-app.use(UserRoutes)
 app.use(AdminRoutes)
+app.use(AuthRoutes)
 app.use(SuperAdminRoutes)
+app.use(UserRoutes)
 app.listen(PORT, () => {console.log(`Your server is running on http://localhost:${PORT}`)})
 app.get("/", async(req, res) => {
     res.send("Welcome to topic learning role-based auth!")

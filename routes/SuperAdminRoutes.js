@@ -10,8 +10,6 @@ import {
     GetAllAdmin, 
     GetAllUser, 
     GetUserById, 
-    LoginSuperAdmin, 
-    LogoutSuperAdmin, 
     RegisterAdmin, 
     RegisterSuperAdmin } from "../controllers/SuperAdminControllers.js";
 import express from "express";
@@ -22,7 +20,6 @@ const router = express.Router()
 // Post method
 router.post("/admin/register", verifySuperAdmin, RegisterAdmin)
 router.post("/super-admin/register", verifySuperAdmin, RegisterSuperAdmin)
-router.post("/super-admin/login", LoginSuperAdmin)
 
 // Put Method
 router.put("/super-admin/change-name", verifySuperAdmin, ChangeNameSuperAdmin)
@@ -40,6 +37,5 @@ router.delete("/super-admin/delete-all-user", verifySuperAdmin, DeleteAllUsers)
 router.delete("/super-admin/delete-user/:id", verifySuperAdmin, DeleteUserById)
 router.delete("/super-admin/delete-all-admin", verifySuperAdmin, DeleteAllAdmins)
 router.delete("/super-admin/delete-admin/:id", verifySuperAdmin, DeleteAdminById)
-router.delete("/super-admin/logout", LogoutSuperAdmin)
 
 export default router
